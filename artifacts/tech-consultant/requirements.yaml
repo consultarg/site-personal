@@ -1,0 +1,14 @@
+packages:
+  "framer-motion": "For smooth scroll fade-in-up animations and staggered lists"
+  "clsx": "For conditional class merging"
+  "tailwind-merge": "For merging tailwind classes safely"
+
+images:
+  - path: "artifacts/tech-consultant/public/images/hero-abstract.png"
+    description: "Minimalist abstract geometric composition with subtle textures, using very warm soft cream and deep navy colors. Clean, architectural, quiet luxury aesthetic, soft lighting, professional and calm."
+    aspect_ratio: "3:4"
+
+notes:
+  - Single page scrolling portfolio site.
+  - No backend required for contact form; it will simulate submission.
+  - Using Framer Motion for intersection observer animations as requested.
