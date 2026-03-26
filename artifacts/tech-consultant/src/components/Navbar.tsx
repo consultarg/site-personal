@@ -34,7 +34,7 @@ export function Navbar() {
         {/* Logo & Status */}
         <div className="flex items-center gap-6">
           <a href="#" className="text-lg font-semibold tracking-tight text-foreground">
-            Alex Morgan
+            Graviens Jorgh
           </a>
           <div className="hidden md:flex items-center gap-2 bg-card border border-border/50 rounded-full px-3 py-1 shadow-sm">
             <span className="relative flex h-2 w-2">

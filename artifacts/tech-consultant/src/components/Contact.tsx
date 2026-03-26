@@ -111,8 +111,8 @@ export function Contact() {
                     </div>
                     <div>
                       <div className="text-sm text-muted-foreground mb-1">Email</div>
-                      <a href="mailto:alex@alexmorgan.co" className="text-lg font-medium text-foreground hover:text-primary/70 transition-colors">
-                        alex@alexmorgan.co
+                      <a href="mailto:graviens@graviensjorgh.co" className="text-lg font-medium text-foreground hover:text-primary/70 transition-colors">
+                        graviens@graviensjorgh.co
                       </a>
                     </div>
                   </div>
