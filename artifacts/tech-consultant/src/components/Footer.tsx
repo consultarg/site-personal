@@ -6,11 +6,11 @@ export function Footer() {
           © {new Date().getFullYear()} Graviens Jorgh. All rights reserved.
         </div>
         <div className="flex gap-6">
-          <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Twitter
+          <a href="https://t.me/fatheyr" className="text-sm text-muted-foreground hover:text-foreground transition-colors" target="_blank">
+            Telegram
           </a>
-          <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            LinkedIn
+          <a href="https://instagram.com/taecyeonokay" className="text-sm text-muted-foreground hover:text-foreground transition-colors" target="_blank">
+            Instagram
           </a>
         </div>
       </div>
