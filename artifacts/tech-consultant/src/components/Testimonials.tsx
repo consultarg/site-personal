@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { FadeIn } from "./FadeIn";
@@ -29,35 +29,73 @@ const testimonials = [
     quote: "The audit alone saved us hours every week. But the bigger win was finally having a system we all understood and actually used.",
     author: "Amara O.",
     role: "Founder, Kindly Labs"
+  },
+  {
+    quote: "Straightforward, honest, and thorough. Graviens told us what we needed to hear, not just what we wanted. That made all the difference.",
+    author: "Tom R.",
+    role: "Operations Lead, Faro Digital"
   }
 ];
 
-export function Testimonials() {
-  const [current, setCurrent] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStartX = useRef(0);
-  const dragDeltaX = useRef(0);
+// Number of cards visible per breakpoint
+const CARDS_DESKTOP = 3;
+const CARDS_TABLET = 2;
+const CARDS_MOBILE = 1;
 
-  const prev = () => setCurrent((c) => (c === 0 ? testimonials.length - 1 : c - 1));
-  const next = () => setCurrent((c) => (c === testimonials.length - 1 ? 0 : c + 1));
+function useVisibleCount() {
+  if (typeof window === "undefined") return CARDS_DESKTOP;
+  if (window.innerWidth < 640) return CARDS_MOBILE;
+  if (window.innerWidth < 1024) return CARDS_TABLET;
+  return CARDS_DESKTOP;
+}
+
+export function Testimonials() {
+  const [page, setPage] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragStartX = useRef(0);
+  const dragging = useRef(false);
+
+  // Responsive: determine cols by screen width on client
+  const [visibleCount, setVisibleCount] = useState(() => {
+    if (typeof window === "undefined") return CARDS_DESKTOP;
+    if (window.innerWidth < 640) return CARDS_MOBILE;
+    if (window.innerWidth < 1024) return CARDS_TABLET;
+    return CARDS_DESKTOP;
+  });
+
+  // Listen for resize
+  useState(() => {
+    if (typeof window === "undefined") return;
+    const handler = () => {
+      if (window.innerWidth < 640) setVisibleCount(CARDS_MOBILE);
+      else if (window.innerWidth < 1024) setVisibleCount(CARDS_TABLET);
+      else setVisibleCount(CARDS_DESKTOP);
+    };
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  });
+
+  const totalPages = Math.ceil(testimonials.length / visibleCount);
+
+  const prev = () => setPage((p) => Math.max(0, p - 1));
+  const next = () => setPage((p) => Math.min(totalPages - 1, p + 1));
 
   const onPointerDown = (e: React.PointerEvent) => {
-    setIsDragging(true);
+    dragging.current = true;
     dragStartX.current = e.clientX;
-    dragDeltaX.current = 0;
   };
-
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!isDragging) return;
-    dragDeltaX.current = e.clientX - dragStartX.current;
+    if (!dragging.current) return;
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    const delta = e.clientX - dragStartX.current;
+    if (delta < -60) next();
+    else if (delta > 60) prev();
   };
 
-  const onPointerUp = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    if (dragDeltaX.current < -50) next();
-    else if (dragDeltaX.current > 50) prev();
-  };
+  const translateX = -(page * 100);
 
   return (
     <section className="py-24 md:py-32 bg-card/30 border-t border-border/40">
@@ -69,69 +107,85 @@ export function Testimonials() {
         />
 
         <FadeIn>
-          <div
-            className="relative mt-4 select-none"
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerLeave={onPointerUp}
-            style={{ touchAction: "pan-y" }}
-          >
-            {/* Card */}
-            <div className="overflow-hidden">
-              <div
-                className="transition-all duration-500 ease-in-out"
-                style={{ minHeight: "280px" }}
-              >
-                <div className="bg-background border border-border rounded-2xl p-10 md:p-14 shadow-sm max-w-3xl mx-auto">
-                  <div className="text-5xl font-serif text-primary/15 mb-6 leading-none">"</div>
-                  <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium mb-10">
-                    {testimonials[current].quote}
-                  </p>
-                  <div>
-                    <div className="font-semibold text-foreground">{testimonials[current].author}</div>
-                    <div className="text-sm text-muted-foreground mt-1">{testimonials[current].role}</div>
-                  </div>
+          <div className="relative overflow-hidden">
+            {/* Sliding track */}
+            <div
+              ref={trackRef}
+              className="flex transition-transform duration-500 ease-in-out cursor-grab active:cursor-grabbing"
+              style={{ transform: `translateX(${translateX}%)` }}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerLeave={onPointerUp}
+            >
+              {/* Pages */}
+              {Array.from({ length: totalPages }).map((_, pageIndex) => (
+                <div
+                  key={pageIndex}
+                  className="min-w-full grid gap-6"
+                  style={{
+                    gridTemplateColumns: `repeat(${visibleCount}, 1fr)`
+                  }}
+                >
+                  {testimonials
+                    .slice(pageIndex * visibleCount, pageIndex * visibleCount + visibleCount)
+                    .map((t, i) => (
+                      <div
+                        key={i}
+                        className="bg-background border border-border rounded-2xl p-8 shadow-sm flex flex-col h-full select-none"
+                      >
+                        <div className="text-4xl font-serif text-primary/15 mb-4 leading-none">"</div>
+                        <p className="text-foreground leading-relaxed flex-grow mb-8 text-base md:text-lg">
+                          {t.quote}
+                        </p>
+                        <div>
+                          <div className="font-semibold text-foreground text-sm">{t.author}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{t.role}</div>
+                        </div>
+                      </div>
+                    ))}
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center justify-between mt-8">
+            {/* Dots */}
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPage(i)}
+                  className={cn(
+                    "rounded-full transition-all duration-300",
+                    i === page
+                      ? "w-6 h-2 bg-primary"
+                      : "w-2 h-2 bg-border hover:bg-muted-foreground"
+                  )}
+                  aria-label={`Page ${i + 1}`}
+                />
+              ))}
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center justify-between max-w-3xl mx-auto mt-8">
-              {/* Dots */}
-              <div className="flex items-center gap-2">
-                {testimonials.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrent(i)}
-                    className={cn(
-                      "rounded-full transition-all duration-300",
-                      i === current
-                        ? "w-6 h-2 bg-primary"
-                        : "w-2 h-2 bg-border hover:bg-muted-foreground"
-                    )}
-                    aria-label={`Go to testimonial ${i + 1}`}
-                  />
-                ))}
-              </div>
-
-              {/* Arrows */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={prev}
-                  className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
-                  aria-label="Previous"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <button
-                  onClick={next}
-                  className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all"
-                  aria-label="Next"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
+            {/* Arrows */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={prev}
+                disabled={page === 0}
+                className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Previous"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={next}
+                disabled={page === totalPages - 1}
+                className="w-10 h-10 rounded-full border border-border bg-background flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                aria-label="Next"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
           </div>
         </FadeIn>
