@@ -29,3 +29,6 @@ timeoutMs = 20000
 
 [userenv.shared]
 GMAIL_USER = "graviens.jorgh@gmail.com"
+
+[nix]
+packages = ["zip"]
