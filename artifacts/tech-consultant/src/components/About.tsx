@@ -13,7 +13,7 @@ export function About() {
               <div className="relative">
                 <div className="w-72 h-80 lg:w-80 lg:h-96 rounded-2xl overflow-hidden border border-border/50 shadow-soft bg-card">
                   <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=640&q=80&fit=crop&crop=faces"
+                    src="https://i.pinimg.com/1200x/bb/41/55/bb4155337fc6994cd711030e9f4c92d4.jpg"
                     alt="Graviens Jorgh"
                     className="w-full h-full object-cover object-top"
                   />

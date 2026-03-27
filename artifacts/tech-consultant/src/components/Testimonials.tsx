@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const testimonials = [
   {
     quote: "Graviens completely changed how we think about our tools. What felt overwhelming is now simple. The clarity he brought was worth more than any software.",
-    author: "Sarah K.",
+    author: "Rebecca S.",
     role: "Head of Operations, Meridian Group"
   },
   {

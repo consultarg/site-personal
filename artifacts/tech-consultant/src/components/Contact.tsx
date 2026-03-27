@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Mail, Phone, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Mail, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { FaTelegramPlane } from "react-icons/fa";
 import { SectionHeading } from "./SectionHeading";
 import { FadeIn } from "./FadeIn";
 
@@ -162,12 +163,12 @@ export function Contact() {
 
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground shrink-0">
-                      <Phone size={18} />
+                      <FaTelegramPlane size={18} />
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground mb-1">WhatsApp</div>
-                      <a href="tel:+15550123456" className="text-lg font-medium text-foreground hover:text-primary/70 transition-colors">
-                        +1 (555) 012-3456
+                      <div className="text-sm text-muted-foreground mb-1">Telegram</div>
+                      <a href="https://t.me/fatheyr" className="text-lg font-medium text-foreground hover:text-primary/70 transition-colors">
+                        @Fatheyr
                       </a>
                     </div>
                   </div>
